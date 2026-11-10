@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Management Desk</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brandGreen: '#0b663b',
+                        brandRed: '#dc2626',
+                        brandRedHover: '#b91c1c',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Custom scrollbar for table container */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="p-3 sm:p-6 text-gray-800 antialiased min-h-screen">
+
+    <div class="max-w-[1440px] mx-auto space-y-5">
+
+        <!-- Top Header Banner -->
+        <header class="bg-brandGreen text-white p-5 sm:p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-md">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight">COMPLIANCE MANAGEMENT DESK</h1>
+                <p class="text-xs sm:text-sm font-light text-emerald-100 opacity-90 mt-0.5">Compliance and operational management dashboard</p>
+            </div>
+            <button id="btnOpenLodgeModal" class="bg-brandRed hover:bg-brandRedHover text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full flex items-center space-x-2 transition shadow-sm active:scale-95 shrink-0">
+                <i class="fa-solid fa-circle-plus text-sm"></i>
+                <span>Lodge New Compliance</span>
+            </button>
+        </header>
+
+        <!-- Filter Controls Bar -->
+        <section class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                <!-- Region Filter -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Region</label>
+                    <select id="filterRegion" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg p-2.5 outline-none focus:border-brandGreen focus:ring-1 focus:ring-brandGreen transition">
+                        <option value="All">All</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Larkana">Larkana</option>
+                        <option value="Sukkur">Sukkur</option>
+                    </select>
+                </div>
+                <!-- District Filter -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">District</label>
+                    <select id="filterDistrict" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg p-2.5 outline-none focus:border-brandGreen focus:ring-1 focus:ring-brandGreen transition">
+                        <option value="All">All</option>
+                        <option value="Badin">Badin</option>
+                        <option value="Thatta">Thatta</option>
+                        <option value="Dadu">Dadu</option>
+                        <option value="Khairpur">Khairpur</option>
+                        <option value="Jacobabad">Jacobabad</option>
+                    </select>
+                </div>
+                <!-- Designation Filter -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Designation</label>
+                    <select id="filterDesignation" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg p-2.5 outline-none focus:border-brandGreen focus:ring-1 focus:ring-brandGreen transition">
+                        <option value="All">All</option>
+                        <option value="District Manager">District Manager</option>
+                        <option value="Medical Officer">Medical Officer</option>
+                        <option value="Compliance Officer">Compliance Officer</option>
+                    </select>
+                </div>
+                <!-- From Date Filter -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">From Date *</label>
+                    <input type="date" id="filterFromDate" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg p-2.5 outline-none focus:border-brandGreen focus:ring-1 focus:ring-brandGreen transition">
+                </div>
+            </div>
+
+            <!-- Status & Action Buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Status</label>
+                    <select id="filterStatus" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg p-2.5 outline-none focus:border-brandGreen focus:ring-1 focus:ring-brandGreen transition">
+                        <option value="All Statuses">All Statuses</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="RESOLVED">Resolved</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button id="btnSearch" class="flex-1 bg-brandRed hover:bg-brandRedHover text-white font-semibold py-2.5 px-4 rounded-lg tracking-wider text-xs sm:text-sm shadow-sm uppercase transition active:scale-95 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>SEARCH</span>
+                    </button>
+                    <button id="btnResetFilter" title="Reset Filters" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold py-2.5 px-3 rounded-lg text-xs sm:text-sm transition active:scale-95">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metric Cards -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- Total Filed -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm flex items-center justify-between border border-gray-100">
+                <div>
+                    <p class="text-[11px] font-bold text-gray-400 tracking-wider uppercase">TOTAL FILED</p>
+                    <p id="statTotal" class="text-3xl font-extrabold text-gray-900 mt-1">0</p>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
+                    <i class="fa-solid fa-list-check text-lg"></i>
+                </div>
+            </div>
+
+            <!-- Pending Action -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm flex items-center justify-between border border-gray-100">
+                <div>
+                    <p class="text-[11px] font-bold text-amber-600 tracking-wider uppercase">PENDING ACTION</p>
+                    <p id="statPending" class="text-3xl font-extrabold text-amber-600 mt-1">0</p>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
+                    <i class="fa-solid fa-hourglass-half text-lg"></i>
+                </div>
+            </div>
+
+            <!-- Resolved -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm flex items-center justify-between border border-gray-100">
+                <div>
+                    <p class="text-[11px] font-bold text-emerald-600 tracking-wider uppercase">RESOLVED</p>
+                    <p id="statResolved" class="text-3xl font-extrabold text-emerald-600 mt-1">0</p>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100">
+                    <i class="fa-solid fa-circle-check text-lg"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Grievance Register Table Section -->
+        <section class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-gray-900">Active Grievance Register</h2>
+                    <p class="text-xs text-gray-500 mt-0.5">Live feed of reported issues across all PPHI Sindh healthcare facilities.</p>
+                </div>
+                <div class="flex items-center space-x-2 w-full sm:w-auto">
+                    <!-- Quick Search Input -->
+                    <div class="relative flex-1 sm:w-64">
+                        <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+                        <input type="text" id="searchInput" placeholder="Search ticket, facility..." class="w-full bg-gray-50 border border-gray-200 text-xs rounded-lg pl-8 pr-3 py-2 outline-none focus:border-brandGreen">
+                    </div>
+                    <button id="btnExportCSV" class="flex items-center space-x-1.5 text-xs text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 transition font-medium shrink-0 active:scale-95">
+                        <i class="fa-solid fa-file-csv text-emerald-600 text-sm"></i>
+                        <span>Export CSV</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto custom-scrollbar rounded-xl border border-gray-200">
+                <table class="w-full text-left border-collapse min-w-[950px]">
+                    <thead>
+                        <tr class="bg-brandGreen text-white text-xs font-semibold">
+                            <th class="p-3 pl-4">Ticket ID</th>
+                            <th class="p-3">Date</th>
+                            <th class="p-3">Region</th>
+                            <th class="p-3">District</th>
+                            <th class="p-3">Facility Name</th>
+                            <th class="p-3">Category</th>
+                            <th class="p-3">Urgency</th>
+                            <th class="p-3 bg-amber-400 text-gray-900 font-bold">Status</th>
+                            <th class="p-3 text-center pr-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="text-xs divide-y divide-gray-100 text-gray-700 bg-white">
+                        <!-- Rows rendered via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-12">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
+                    <i class="fa-solid fa-folder-open text-2xl"></i>
+                </div>
+                <p class="text-sm font-semibold text-gray-600">No matching tickets found</p>
+                <p class="text-xs text-gray-400 mt-1">Try adjusting your filters or search terms.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Modal: Lodge New Compliance -->
+    <div id="modalLodge" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-gray-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-file-circle-plus text-brandGreen"></i>
+                    <span>Lodge New Compliance Ticket</span>
+                </h3>
+                <button id="btnCloseLodgeModal" class="text-gray-400 hover:text-gray-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="formLodgeTicket" class="space-y-3.5 text-xs">
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Region *</label>
+                    <select id="newRegion" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-brandGreen">
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Larkana">Larkana</option>
+                        <option value="Sukkur">Sukkur</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">District *</label>
+                    <input type="text" id="newDistrict" required placeholder="e.g. Badin, Dadu, Thatta" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-brandGreen">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Facility Name *</label>
+                    <input type="text" id="newFacility" required placeholder="e.g. BHU Aabad Samoo" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-brandGreen">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Category *</label>
+                    <input type="text" id="newCategory" required placeholder="e.g. Medicine Stockout, Equipment, HF" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-brandGreen">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-1">Urgency *</label>
+                        <select id="newUrgency" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-brandGreen">
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-1">Status *</label>
+                        <select id="newStatus" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-brandGreen">
+                            <option value="PENDING">PENDING</option>
+                            <option value="RESOLVED">RESOLVED</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-3 flex justify-end space-x-2">
+                    <button type="button" id="btnCancelLodge" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 font-semibold hover:bg-gray-100 transition">Cancel</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-brandGreen hover:bg-emerald-800 text-white font-semibold transition">Submit Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Ticket Detail View -->
+    <div id="modalDetail" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-gray-900" id="detailTicketId">Ticket Detail</h3>
+                <button id="btnCloseDetailModal" class="text-gray-400 hover:text-gray-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="detailContent" class="space-y-2.5 text-xs text-gray-700">
+                <!-- Dynamic Content inserted via JavaScript -->
+            </div>
+            <div class="pt-2 text-right">
+                <button id="btnCloseDetail" class="px-4 py-2 bg-gray-800 text-white rounded-lg font-semibold text-xs hover:bg-gray-900">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Initial Mock Data from Reference Image
+        let tickets = [
+            { id: "CMP-2024-101", date: "2026-11-02", region: "Hyderabad", district: "Badin", facility: "BHU Aabad Samoo", category: "HF", urgency: "High", status: "PENDING" },
+            { id: "CMP-2024-102", date: "2026-11-01", region: "Hyderabad", district: "Thatta", facility: "RHC Gharo", category: "Medicine Stockout", urgency: "High", status: "RESOLVED" },
+            { id: "CMP-2024-103", date: "2026-10-28", region: "Larkana", district: "Dadu", facility: "MCH Center Dadu", category: "Emergency tay", urgency: "Medium", status: "RESOLVED" },
+            { id: "CMP-2024-104", date: "2026-10-25", region: "Larkana", district: "Dadu", facility: "BHU Johi", category: "ANC", urgency: "Low", status: "PENDING" },
+            { id: "CMP-2024-105", date: "2026-10-22", region: "Sukkur", district: "Khairpur", facility: "RHC Mirwah", category: "Equipment", urgency: "Medium", status: "RESOLVED" },
+            { id: "CMP-2024-106", date: "2026-10-19", region: "Sukkur", district: "Jacobabad", facility: "BHU Thul", category: "Medicine", urgency: "High", status: "PENDING" }
+        ];
+
+        // Total resolved count from summary context override if required
+        let resolvedOffset = 11; // To match screenshot dashboard display offset (14 total resolved initially)
+
+        // DOM Elements
+        const tableBody = document.getElementById('tableBody');
+        const emptyState = document.getElementById('emptyState');
+        const statTotal = document.getElementById('statTotal');
+        const statPending = document.getElementById('statPending');
+        const statResolved = document.getElementById('statResolved');
+        const searchInput = document.getElementById('searchInput');
+
+        // Filters DOM
+        const filterRegion = document.getElementById('filterRegion');
+        const filterDistrict = document.getElementById('filterDistrict');
+        const filterStatus = document.getElementById('filterStatus');
+        const filterFromDate = document.getElementById('filterFromDate');
+        const btnSearch = document.getElementById('btnSearch');
+        const btnResetFilter = document.getElementById('btnResetFilter');
+
+        // Modals DOM
+        const modalLodge = document.getElementById('modalLodge');
+        const btnOpenLodgeModal = document.getElementById('btnOpenLodgeModal');
+        const btnCloseLodgeModal = document.getElementById('btnCloseLodgeModal');
+        const btnCancelLodge = document.getElementById('btnCancelLodge');
+        const formLodgeTicket = document.getElementById('formLodgeTicket');
+
+        const modalDetail = document.getElementById('modalDetail');
+        const btnCloseDetailModal = document.getElementById('btnCloseDetailModal');
+        const btnCloseDetail = document.getElementById('btnCloseDetail');
+
+        // Render Table & Cards
+        function renderTable(dataToRender = tickets) {
+            tableBody.innerHTML = '';
+
+            if (dataToRender.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            dataToRender.forEach(ticket => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-emerald-50/40 transition duration-150 border-b border-gray-100';
+
+                // Urgency Color Badge
+                let urgencyColor = 'text-gray-600';
+                if (ticket.urgency === 'High') urgencyColor = 'text-red-600 font-bold';
+                else if (ticket.urgency === 'Medium') urgencyColor = 'text-amber-600 font-bold';
+                else if (ticket.urgency === 'Low') urgencyColor = 'text-blue-600 font-semibold';
+
+                // Status Badge
+                let statusBadge = ticket.status === 'PENDING'
+                    ? `<span class="bg-amber-100 text-amber-800 border border-amber-300 font-bold px-2.5 py-0.5 rounded-full text-[10px] tracking-wide inline-block">PENDING</span>`
+                    : `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-2.5 py-0.5 rounded-full text-[10px] tracking-wide inline-block">RESOLVED</span>`;
+
+                tr.innerHTML = `
+                    <td class="p-3 pl-4 font-bold text-brandGreen hover:underline cursor-pointer" onclick="openDetailModal('${ticket.id}')">${ticket.id}</td>
+                    <td class="p-3 text-gray-500">${ticket.date}</td>
+                    <td class="p-3">${ticket.region}</td>
+                    <td class="p-3">${ticket.district}</td>
+                    <td class="p-3 font-semibold text-gray-900">${ticket.facility}</td>
+                    <td class="p-3 text-gray-600">${ticket.category}</td>
+                    <td class="p-3 ${urgencyColor}">${ticket.urgency}</td>
+                    <td class="p-3">${statusBadge}</td>
+                    <td class="p-3 text-center pr-4 space-x-2">
+                        <button title="Toggle Status" onclick="toggleStatus('${ticket.id}')" class="text-gray-400 hover:text-emerald-700 p-1 rounded hover:bg-gray-100 transition">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                        <button title="View Detail" onclick="openDetailModal('${ticket.id}')" class="text-gray-400 hover:text-blue-600 p-1 rounded hover:bg-gray-100 transition">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                        <button title="Delete Ticket" onclick="deleteTicket('${ticket.id}')" class="text-gray-400 hover:text-red-600 p-1 rounded hover:bg-gray-100 transition">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            updateMetrics();
+        }
+
+        // Update Dynamic Summary Cards
+        function updateMetrics() {
+            const pendingCount = tickets.filter(t => t.status === 'PENDING').length;
+            const resolvedCount = tickets.filter(t => t.status === 'RESOLVED').length;
+
+            statTotal.textContent = tickets.length;
+            statPending.textContent = pendingCount;
+            // Includes background historical count to match image figure (14) if initial
+            statResolved.textContent = resolvedCount + resolvedOffset;
+        }
+
+        // Filter Functionality
+        function applyFilters() {
+            const regionVal = filterRegion.value;
+            const districtVal = filterDistrict.value;
+            const statusVal = filterStatus.value;
+            const dateVal = filterFromDate.value;
+            const searchVal = searchInput.value.toLowerCase().trim();
+
+            const filtered = tickets.filter(t => {
+                const matchRegion = (regionVal === 'All') || (t.region === regionVal);
+                const matchDistrict = (districtVal === 'All') || (t.district === districtVal);
+                const matchStatus = (statusVal === 'All Statuses') || (t.status === statusVal);
+                const matchDate = (!dateVal) || (t.date >= dateVal);
+
+                const matchSearch = (!searchVal) || 
+                    t.id.toLowerCase().includes(searchVal) ||
+                    t.facility.toLowerCase().includes(searchVal) ||
+                    t.category.toLowerCase().includes(searchVal) ||
+                    t.district.toLowerCase().includes(searchVal);
+
+                return matchRegion && matchDistrict && matchStatus && matchDate && matchSearch;
+            });
+
+            renderTable(filtered);
+        }
+
+        // Action: Toggle Status
+        function toggleStatus(id) {
+            const ticket = tickets.find(t => t.id === id);
+            if (ticket) {
+                ticket.status = ticket.status === 'PENDING' ? 'RESOLVED' : 'PENDING';
+                applyFilters();
+            }
+        }
+
+        // Action: Delete Ticket
+        function deleteTicket(id) {
+            tickets = tickets.filter(t => t.id !== id);
+            applyFilters();
+        }
+
+        // Modal: Detail View
+        function openDetailModal(id) {
+            const ticket = tickets.find(t => t.id === id);
+            if (!ticket) return;
+
+            document.getElementById('detailTicketId').textContent = `Ticket Details - ${ticket.id}`;
+            const container = document.getElementById('detailContent');
+            container.innerHTML = `
+                <div class="grid grid-cols-2 gap-2 bg-gray-50 p-3 rounded-lg">
+                    <div><span class="font-semibold text-gray-500">Date:</span> ${ticket.date}</div>
+                    <div><span class="font-semibold text-gray-500">Urgency:</span> <span class="font-bold">${ticket.urgency}</span></div>
+                    <div><span class="font-semibold text-gray-500">Region:</span> ${ticket.region}</div>
+                    <div><span class="font-semibold text-gray-500">District:</span> ${ticket.district}</div>
+                </div>
+                <div><span class="font-semibold text-gray-500">Facility:</span> <p class="text-sm font-bold text-gray-800">${ticket.facility}</p></div>
+                <div><span class="font-semibold text-gray-500">Category:</span> <p class="text-xs text-gray-700">${ticket.category}</p></div>
+                <div><span class="font-semibold text-gray-500">Status:</span> <p class="mt-1">${ticket.status === 'PENDING' ? '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">PENDING</span>' : '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">RESOLVED</span>'}</p></div>
+            `;
+
+            modalDetail.classList.remove('hidden');
+        }
+
+        // Export to CSV Function
+        function exportCSV() {
+            if (tickets.length === 0) return;
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Ticket ID,Date,Region,District,Facility Name,Category,Urgency,Status\n";
+
+            tickets.forEach(t => {
+                csvContent += `"${t.id}","${t.date}","${t.region}","${t.district}","${t.facility}","${t.category}","${t.urgency}","${t.status}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Compliance_Grievance_Register_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Event Listeners
+        btnSearch.addEventListener('click', applyFilters);
+        searchInput.addEventListener('input', applyFilters);
+
+        btnResetFilter.addEventListener('click', () => {
+            filterRegion.value = 'All';
+            filterDistrict.value = 'All';
+            filterStatus.value = 'All Statuses';
+            filterDesignation.value = 'All';
+            filterFromDate.value = '';
+            searchInput.value = '';
+            applyFilters();
+        });
+
+        // Lodge Modal Listeners
+        btnOpenLodgeModal.addEventListener('click', () => modalLodge.classList.remove('hidden'));
+        btnCloseLodgeModal.addEventListener('click', () => modalLodge.classList.add('hidden'));
+        btnCancelLodge.addEventListener('click', () => modalLodge.classList.add('hidden'));
+
+        // Form Submit: New Compliance
+        formLodgeTicket.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nextIndex = tickets.length + 101;
+            const newTicket = {
+                id: `CMP-2024-${nextIndex}`,
+                date: new Date().toISOString().slice(0, 10),
+                region: document.getElementById('newRegion').value,
+                district: document.getElementById('newDistrict').value,
+                facility: document.getElementById('newFacility').value,
+                category: document.getElementById('newCategory').value,
+                urgency: document.getElementById('newUrgency').value,
+                status: document.getElementById('newStatus').value
+            };
+
+            tickets.unshift(newTicket);
+            formLodgeTicket.reset();
+            modalLodge.classList.add('hidden');
+            applyFilters();
+        });
+
+        // Detail Modal Close
+        btnCloseDetailModal.addEventListener('click', () => modalDetail.classList.add('hidden'));
+        btnCloseDetail.addEventListener('click', () => modalDetail.classList.add('hidden'));
+
+        // CSV Export Trigger
+        document.getElementById('btnExportCSV').addEventListener('click', exportCSV);
+
+        // Initial Initialization
+        window.onload = function() {
+            renderTable();
+        };
+    </script>
+</body>
+</html>

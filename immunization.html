@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMU - EPI Immunisation Services Audit Log</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-canvas: #f8fafc;
+            --brand-dark: #0f172a;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --open-green: #059669;
+            --closed-red: #dc2626;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* Top Brand Navigation Header */
+        .navbar-mmu {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 14px 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .navbar-brand-title {
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: -0.01em;
+        }
+
+        .navbar-subtext {
+            color: #94a3b8;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        /* Page Content Header */
+        .page-header-card {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 32px;
+        }
+
+        /* Category Summary Cards */
+        .cat-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 16px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cat-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background-color: #f0fdf4;
+            color: var(--open-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* Main Section Cards */
+        .log-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .log-card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Table Aesthetics */
+        .table-responsive {
+            border-radius: 0 0 16px 16px;
+        }
+
+        .custom-table {
+            margin-bottom: 0;
+            font-size: 0.83rem;
+            vertical-align: middle;
+        }
+
+        .custom-table thead th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .custom-table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        .custom-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .custom-table td {
+            padding: 12px 14px;
+            color: #1e293b;
+            border-bottom: 1px solid #f1f5f9;
+            white-space: nowrap;
+        }
+
+        /* Status Badges */
+        .badge-avail {
+            background-color: #d1fae5;
+            color: #047857;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .badge-missing {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* Action Buttons */
+        .btn-excel {
+            color: #047857;
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            font-weight: 600;
+            font-size: 0.82rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-excel:hover {
+            background-color: #059669;
+            color: #ffffff;
+            border-color: #059669;
+        }
+
+        .btn-evidence {
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+
+        /* Indicator Highlight Modal List Styling */
+        .indicator-list-group .list-group-item {
+            font-size: 0.85rem;
+            border-color: #e2e8f0;
+            padding: 10px 14px;
+        }
+        .indicator-list-group .list-group-item-defective {
+            background-color: #fef2f2;
+            border-left: 4px solid #dc2626;
+            font-weight: 700;
+            color: #991b1b;
+        }
+
+        /* Pagination Toolbar Styling */
+        .table-pagination-footer {
+            padding: 12px 24px;
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.82rem;
+        }
+        .pagination .page-link {
+            font-size: 0.8rem;
+            padding: 0.375rem 0.65rem;
+            color: #475569;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #0f172a;
+            border-color: #0f172a;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Header -->
+    <nav class="navbar navbar-mmu navbar-dark">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-syringe fa-2x text-info me-3"></i>
+                <div>
+                    <div class="navbar-brand-title">MMU Portal</div>
+                    <div class="navbar-subtext">Ministers Monitoring Unit</div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <a href="index.html" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-semibold">
+                    <i class="fa-solid fa-circle fa-2xs me-1"></i> Field Audit Live
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Title Bar -->
+    <div class="page-header-card">
+        <div class="container-fluid">
+            <h4 class="m-0 fw-bold text-dark">EPI Immunisation Services Readiness & Input Log</h4>
+            <small class="text-muted">Expanded Programme on Immunisation audit covering room status, vaccinator staff, ILR cold chain & equipment</small>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="container-fluid p-4">
+
+        <!-- Category Overview Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-xl-4 col-md-4">
+                <div class="cat-card">
+                    <div class="cat-icon-wrapper">
+                        <i class="fa-solid fa-door-open"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted fs-7 fw-bold uppercase">1. EPI Room Open</div>
+                        <small class="text-secondary">Open during 1st shift (8:00 AM - 2:00 PM)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-4">
+                <div class="cat-card">
+                    <div class="cat-icon-wrapper" style="background-color: #eff6ff; color: #2563eb;">
+                        <i class="fa-solid fa-user-nurse"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted fs-7 fw-bold uppercase">2. Vaccination Staff</div>
+                        <small class="text-secondary">Vaccinator or Trained Staff (LHV, MO, Dispenser)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-4">
+                <div class="cat-card">
+                    <div class="cat-icon-wrapper" style="background-color: #fff7ed; color: #ea580c;">
+                        <i class="fa-solid fa-temperature-arrow-down"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted fs-7 fw-bold uppercase">3. Equipment & Instruments</div>
+                        <small class="text-secondary">Cards, Syringes, ILR (2°C-8°C), Vaccine Carrier</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- EPI AUDIT LOG TABLE -->
+            <div class="col-xl-12">
+                <div class="log-card">
+                    <div class="log-card-header">
+                        <h5 class="m-0 fw-bold text-dark d-flex align-items-center">
+                            <i class="fa-solid fa-clipboard-check me-2 text-primary"></i> EPI Room Inspection Checklist Log
+                        </h5>
+                        <button class="btn btn-excel" onclick="exportToExcel('epiTable', 'EPI_Immunisation_Audit_Log')">
+                            <i class="fa-solid fa-file-excel me-1"></i> Export Excel
+                        </button>
+                    </div>
+
+                    <div class="table-responsive flex-grow-1">
+                        <table class="table custom-table align-middle" id="epiTable" data-page-size="5" data-current-page="1">
+                            <thead>
+                                <tr>
+                                    <th>HF Code</th>
+                                    <th>Region</th>
+                                    <th>Dist</th>
+                                    <th>HF Name</th>
+                                    <th>HF Type</th>
+                                    <th>Visit Time & Date</th>
+                                    <th>Audited Category</th>
+                                    <th>Status</th>
+                                    <th>Defective / Missing Parameter(s)</th>
+                                    <th>Action / Full Indicator Inspection</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <!-- Scenario 1: Multiple Deficiencies in Equipment (Cold Chain & Temperature Defect) -->
+                                <tr>
+                                    <td class="fw-semibold text-secondary">HF-1002</td>
+                                    <td>Northern</td>
+                                    <td>Attock</td>
+                                    <td class="fw-bold">RHC Alpine</td>
+                                    <td><span class="badge bg-primary-subtle text-primary">RHC</span></td>
+                                    <td>08:15 AM, 04-Nov-2026</td>
+                                    <td class="fw-bold" style="color: #ea580c;">3. Equipment & Instruments availability</td>
+                                    <td><span class="badge-missing"><i class="fa-solid fa-triangle-exclamation me-1"></i>2 Deficiencies</span></td>
+                                    <td class="text-danger fw-bold">Optimal temperature for ILR, Standard vaccine carrier (SVC)</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger btn-evidence" 
+                                                onclick='openEpiModal("HF-1002 - RHC Alpine", "3. Equipment & Instruments availability", ["Optimal temperature for ILR", "Standard vaccine carrier (SVC)"], "ILR temperature reading at 11.5°C (out of 2°C-8°C range) due to power failure; cool packs missing in SVC.")'>
+                                            <i class="fa-solid fa-layer-group me-1"></i> View Breakdown
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Scenario 2: Room Closed During Shift Hours -->
+                                <tr>
+                                    <td class="fw-semibold text-secondary">HF-2005</td>
+                                    <td>Central</td>
+                                    <td>Lahore</td>
+                                    <td class="fw-bold">GRD Model Town</td>
+                                    <td><span class="badge bg-info-subtle text-info-emphasis">GRD</span></td>
+                                    <td>09:45 AM, 04-Nov-2026</td>
+                                    <td class="fw-bold text-success">1. EPI room open</td>
+                                    <td><span class="badge-missing"><i class="fa-solid fa-triangle-exclamation me-1"></i>1 Deficiency</span></td>
+                                    <td class="text-danger fw-bold">EPI room open during working hours</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger btn-evidence" 
+                                                onclick='openEpiModal("HF-2005 - GRD Model Town", "1. EPI room open", ["EPI room open during working hours"], "EPI room locked during first shift audit (9:45 AM).")'>
+                                            <i class="fa-solid fa-layer-group me-1"></i> View Breakdown
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Scenario 3: Vaccination Staff Absent -->
+                                <tr>
+                                    <td class="fw-semibold text-secondary">HF-2001</td>
+                                    <td>Southern</td>
+                                    <td>Rahim Yar Khan</td>
+                                    <td class="fw-bold">RHC East</td>
+                                    <td><span class="badge bg-primary-subtle text-primary">RHC</span></td>
+                                    <td>08:45 AM, 04-Nov-2026</td>
+                                    <td class="fw-bold text-primary">2. Vaccination staff availability</td>
+                                    <td><span class="badge-missing"><i class="fa-solid fa-triangle-exclamation me-1"></i>1 Deficiency</span></td>
+                                    <td class="text-danger fw-bold">Vaccinator / Trained Staff Absent</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger btn-evidence" 
+                                                onclick='openEpiModal("HF-2001 - RHC East", "2. Vaccination staff availability", ["Vaccinator present OR Other trained vaccination staff present"], "Neither designated Vaccinator nor alternative trained vaccination staff present.")'>
+                                            <i class="fa-solid fa-layer-group me-1"></i> View Breakdown
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Scenario 4: Multiple Equipment Deficiencies (Cards & Syringes Missing) -->
+                                <tr>
+                                    <td class="fw-semibold text-secondary">HF-2003</td>
+                                    <td>Eastern</td>
+                                    <td>Kasur</td>
+                                    <td class="fw-bold">BHU Sunridge</td>
+                                    <td><span class="badge bg-secondary-subtle text-dark">BHU</span></td>
+                                    <td>09:10 AM, 04-Nov-2026</td>
+                                    <td class="fw-bold" style="color: #ea580c;">3. Equipment & Instruments availability</td>
+                                    <td><span class="badge-missing"><i class="fa-solid fa-triangle-exclamation me-1"></i>2 Deficiencies</span></td>
+                                    <td class="text-danger fw-bold">Immunisation cards, Vaccination syringes</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger btn-evidence" 
+                                                onclick='openEpiModal("HF-2003 - BHU Sunridge", "3. Equipment & Instruments availability", ["Immunisation cards", "Vaccination syringes"], "Stockout of child immunisation cards and AD vaccination syringes.")'>
+                                            <i class="fa-solid fa-layer-group me-1"></i> View Breakdown
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Scenario 5: Fully Compliant Facility (All Functional) -->
+                                <tr>
+                                    <td class="fw-semibold text-secondary">HF-1001</td>
+                                    <td>Northern</td>
+                                    <td>Rawalpindi</td>
+                                    <td class="fw-bold">BHU Central</td>
+                                    <td><span class="badge bg-secondary-subtle text-dark">BHU</span></td>
+                                    <td>08:00 AM, 04-Nov-2026</td>
+                                    <td class="fw-bold text-success">1. EPI room open</td>
+                                    <td><span class="badge-avail"><i class="fa-solid fa-circle-check me-1"></i>100% Compliant</span></td>
+                                    <td class="text-muted fw-semibold">None (All Functional)</td>
+                                    <td>
+                                        <button class="btn btn-outline-success btn-evidence" 
+                                                onclick='openEpiModal("HF-1001 - BHU Central", "1. EPI room open", [], "EPI room operational with active cold chain and vaccinator on duty.")'>
+                                            <i class="fa-solid fa-layer-group me-1"></i> View Breakdown
+                                        </button>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div class="table-pagination-footer d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted">Rows per page:</span>
+                            <select class="form-select form-select-sm" style="width: 70px;" onchange="changePageSize('epiTable', this.value)">
+                                <option value="3">3</option>
+                                <option value="5" selected>5</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                        <div id="epiTableInfo" class="text-muted">Showing 0 to 0 of 0 entries</div>
+                        <ul class="pagination pagination-sm m-0" id="epiTablePagination"></ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Dynamic EPI Indicator Breakdown Modal -->
+    <div class="modal fade" id="epiBreakdownModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <div>
+                        <h6 class="modal-title fw-bold" id="breakdownModalTitle">EPI Category Indicators Breakdown</h6>
+                        <small class="text-muted" id="breakdownModalSub">Immunisation Services Audit Log</small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+
+                    <div class="alert alert-light border rounded-3 d-flex align-items-center justify-content-between mb-3 p-3">
+                        <div>
+                            <span class="text-muted fs-7">Inspected Category:</span>
+                            <div class="fw-bold text-dark" id="modalCategoryName">--</div>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted fs-7">Audit Result:</span>
+                            <div id="modalAuditStatus">--</div>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold fs-7 uppercase text-secondary mb-2">EPI Input Checklist & Criteria Status:</h6>
+                    
+                    <!-- Dynamic Indicators Container -->
+                    <ul class="list-group indicator-list-group shadow-sm mb-3" id="indicatorListContainer" style="max-height: 380px; overflow-y: auto;">
+                        <!-- JS dynamically inserts category parameters and criteria -->
+                    </ul>
+
+                    <div id="remarksContainer" class="p-3 bg-light rounded border">
+                        <small class="fw-bold text-dark d-block mb-1"><i class="fa-solid fa-comment-dots me-1 text-primary"></i> Inspector Remarks:</small>
+                        <small class="text-muted" id="modalRemarksText">None</small>
+                    </div>
+
+                </div>
+                <div class="modal-footer bg-light">
+                    <button class="btn btn-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary btn-sm rounded-pill px-4" onclick="downloadAttachment()">
+                        <i class="fa-solid fa-download me-1"></i> Download Evidence Proof
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Exact EPI Category Database & Criteria (Derived from Reference Image 7)
+        const epiIndicatorsDB = {
+            "1. EPI room open": [
+                { name: "EPI room open during working hours", criteria: "EPI room is open during the first shift of the facility (8am-2pm)" }
+            ],
+            "2. Vaccination staff availability": [
+                { name: "Vaccinator present OR Other trained vaccination staff present", criteria: "At least one vaccinator is present in the EPI room OR At least one trained vaccination staff (eg. dispenser, LHV, MO, WMO etc.) is present in the facility to conduct vaccinations" }
+            ],
+            "3. Equipment & Instruments availability": [
+                { name: "Immunisation cards", criteria: "At least one immunisation card is available in the EPI room" },
+                { name: "Vaccination syringes", criteria: "At least one vaccination syringe is available in the EPI room" },
+                { name: "Functional ILR availability", criteria: "At least one functional ILR is available in the EPI room" },
+                { name: "Optimal temperature for ILR", criteria: "The temperature reading on the functional ILR is between 2°C - 8°C" },
+                { name: "Standard vaccine carrier (SVC)", criteria: "At least one functional Standard Vaccine Carrier with cool packs is available in the EPI room" }
+            ]
+        };
+
+        // Modal Handler: Renders all indicators in the category, highlighting defective ones
+        function openEpiModal(facilityTitle, categoryName, defectiveIndicators, remarks) {
+            document.getElementById('breakdownModalTitle').innerText = facilityTitle;
+            document.getElementById('breakdownModalSub').innerText = 'EPI Service Readiness Audit Breakdown';
+            document.getElementById('modalCategoryName').innerText = categoryName;
+            document.getElementById('modalRemarksText').innerText = remarks || "No additional remarks.";
+
+            // Standardize defective list to lower-cased array
+            let missingList = [];
+            if (Array.isArray(defectiveIndicators)) {
+                missingList = defectiveIndicators.map(item => item.toLowerCase().trim());
+            } else if (typeof defectiveIndicators === 'string' && defectiveIndicators.trim() !== '') {
+                missingList = [defectiveIndicators.toLowerCase().trim()];
+            }
+
+            const statusBadgeElem = document.getElementById('modalAuditStatus');
+            if (missingList.length > 0) {
+                statusBadgeElem.innerHTML = `<span class="badge-missing"><i class="fa-solid fa-triangle-exclamation me-1"></i> ${missingList.length} Deficient Indicator(s)</span>`;
+            } else {
+                statusBadgeElem.innerHTML = '<span class="badge-avail"><i class="fa-solid fa-circle-check me-1"></i> 100% Compliant</span>';
+            }
+
+            const container = document.getElementById('indicatorListContainer');
+            container.innerHTML = '';
+
+            const list = epiIndicatorsDB[categoryName] || [];
+
+            list.forEach(item => {
+                const li = document.createElement('li');
+                const isDefective = missingList.some(missingItem => item.name.toLowerCase().includes(missingItem));
+
+                if (isDefective) {
+                    li.className = 'list-group-item list-group-item-defective d-flex justify-content-between align-items-center mb-1 rounded';
+                    li.innerHTML = `
+                        <div>
+                            <i class="fa-solid fa-circle-xmark me-2 text-danger"></i>
+                            <span>${item.name}</span>
+                            <br><small class="text-danger-emphasis">Criteria: ${item.criteria}</small>
+                        </div>
+                        <span class="badge bg-danger text-white px-2 py-1">DEFICIENT / MISSING</span>
+                    `;
+                } else {
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center text-secondary mb-1 rounded';
+                    li.innerHTML = `
+                        <div>
+                            <i class="fa-solid fa-circle-check me-2 text-success"></i>
+                            <span>${item.name}</span>
+                            <br><small class="text-muted">Criteria: ${item.criteria}</small>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle">Compliant / Functional</span>
+                    `;
+                }
+
+                container.appendChild(li);
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('epiBreakdownModal'));
+            modal.show();
+        }
+
+        // Pagination Engine
+        function renderPagination(tableId) {
+            const table = document.getElementById(tableId);
+            const pageSize = parseInt(table.getAttribute('data-page-size')) || 5;
+            let currentPage = parseInt(table.getAttribute('data-current-page')) || 1;
+
+            const tbody = table.querySelector('tbody');
+            const allRows = Array.from(tbody.querySelectorAll('tr'));
+            
+            const totalEntries = allRows.length;
+            const totalPages = Math.ceil(totalEntries / pageSize) || 1;
+
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIdx = (currentPage - 1) * pageSize;
+            const endIdx = startIdx + pageSize;
+
+            allRows.forEach(row => row.style.display = 'none');
+            allRows.slice(startIdx, endIdx).forEach(row => row.style.display = '');
+
+            const infoElem = document.getElementById(tableId + 'Info');
+            if (infoElem) {
+                const showingStart = totalEntries === 0 ? 0 : startIdx + 1;
+                const showingEnd = Math.min(endIdx, totalEntries);
+                infoElem.textContent = `Showing ${showingStart} to ${showingEnd} of ${totalEntries} entries`;
+            }
+
+            const pagContainer = document.getElementById(tableId + 'Pagination');
+            if (!pagContainer) return;
+            pagContainer.innerHTML = '';
+
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage('${tableId}', ${currentPage - 1}); return false;">Previous</a>`;
+            pagContainer.appendChild(prevLi);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="changePage('${tableId}', ${i}); return false;">${i}</a>`;
+                pagContainer.appendChild(li);
+            }
+
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage('${tableId}', ${currentPage + 1}); return false;">Next</a>`;
+            pagContainer.appendChild(nextLi);
+        }
+
+        function changePage(tableId, pageNum) {
+            const table = document.getElementById(tableId);
+            table.setAttribute('data-current-page', pageNum);
+            renderPagination(tableId);
+        }
+
+        function changePageSize(tableId, newSize) {
+            const table = document.getElementById(tableId);
+            table.setAttribute('data-page-size', newSize);
+            table.setAttribute('data-current-page', 1);
+            renderPagination(tableId);
+        }
+
+        // CSV Export Functionality
+        function exportToExcel(tableId, filename) {
+            const table = document.getElementById(tableId);
+            let csv = [];
+            
+            let headers = [];
+            const ths = table.querySelectorAll('thead th');
+            ths.forEach(th => {
+                headers.push('"' + th.innerText.trim().replace(/"/g, '""') + '"');
+            });
+            csv.push(headers.join(','));
+
+            const trs = table.querySelectorAll('tbody tr');
+            trs.forEach(tr => {
+                let row = [];
+                const tds = tr.querySelectorAll('td');
+                tds.forEach(td => {
+                    let data = td.innerText.replace(/(\r\n|\n|\r)/gm, " ").replace(/\s+/g, " ").trim();
+                    data = data.replace(/"/g, '""');
+                    row.push('"' + data + '"');
+                });
+                csv.push(row.join(","));
+            });
+
+            const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            const downloadLink = document.createElement("a");
+            downloadLink.download = filename + ".csv";
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        function downloadAttachment() {
+            const msgBox = document.createElement('div');
+            msgBox.className = 'alert alert-info position-fixed bottom-0 end-0 m-3 shadow-sm';
+            msgBox.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Evidence attachment download initiated.';
+            document.body.appendChild(msgBox);
+            setTimeout(() => msgBox.remove(), 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPagination('epiTable');
+        });
+    </script>
+</body>
+</html>

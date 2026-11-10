@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMU - Family Planning Services Audit Log</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-canvas: #f8fafc;
+            --brand-dark: #0f172a;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --open-green: #059669;
+            --closed-red: #dc2626;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* Top Brand Navigation Header */
+        .navbar-mmu {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 14px 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .navbar-brand-title {
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: -0.01em;
+        }
+
+        .navbar-subtext {
+            color: #94a3b8;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        /* Page Content Header */
+        .page-header-card {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 32px;
+        }
+
+        /* Rule Info Box */
+        .rule-info-card {
+            background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 16px 24px;
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.15);
+        }
+
+        /* Category Summary Cards */
+        .cat-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 16px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cat-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background-color: #f0fdf4;
+            color: var(--open-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* Main Section Cards */
+        .log-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .log-card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Table Aesthetics */
+        .table-responsive {
+            border-radius: 0 0 16px 16px;
+        }
+
+        .custom-table {
+            margin-bottom: 0;
+            font-size: 0.83rem;
+            vertical-align: middle;
+        }
+
+        .custom-table thead th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .custom-table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        .custom-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .custom-table td {
+            padding: 12px 14px;
+            color: #1e293b;
+            border-bottom: 1px solid #f1f5f9;
+            white-space: nowrap;
+        }
+
+        /* Status Badges */
+        .badge-avail {
+            background-color: #d1fae5;
+            color: #047857;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .badge-missing {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* Action Buttons */
+        .btn-excel {
+            color: #047857;
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            font-weight: 600;
+            font-size: 0.82rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-excel:hover {
+            background-color: #059669;
+            color: #ffffff;
+            border-color: #059669;
+        }
+
+        .btn-evidence {
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+
+        /* Indicator Highlight Modal List Styling */
+        .indicator-list-group .list-group-item {
+            font-size: 0.85rem;
+            border-color: #e2e8f0;
+            padding: 10px 14px;
+        }
+        .indicator-list-group .list-group-item-defective {
+            background-color: #fef2f2;
+            border-left: 4px solid #dc2626;
+            font-weight: 700;
+            color: #991b1b;
+        }
+
+        /* Pagination Toolbar Styling */
+        .table-pagination-footer {
+            padding: 12px 24px;
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.82rem;
+        }
+        .pagination .page-link {
+            font-size: 0.8rem;
+            padding: 0.375rem 0.65rem;
+            color: #475569;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #0f172a;
+            border-color: #0f172a;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Header -->
+    <nav class="navbar navbar-mmu navbar-dark">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-people-roof fa-2x text-info me-3"></i>
+                <div>
+                    <div class="navbar-brand-title">MMU Portal</div>
+                    <div class="navbar-subtext">Ministers Monitoring Unit</div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <a href="index.html" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-semibold">
+                    <i class="fa-solid fa-circle fa-2xs me-1"></i> Field Audit Live
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Title Bar -->
+    <div class="page-header-card">
+        <div class="container-fluid">
+            <h4 class="m-0 fw-bold text-dark">Family Planning Services Readiness & Stock Log</h4>
+            <small class="text-muted">Audit inspection covering contraceptives stock, administration infrastructure, trained staff, and essential FP equipment</small>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="container-fluid p-4">
+
+        <!-- Stock Criterion Definition Banner -->
+        <div class="rule-info-card mb-4 d-flex align-items-center gap-3">
+            <i class="fa-solid fa-boxes-stacked fa-2x text-warning"></i>
+            <div>
+                <h6 class="fw-bold mb-1"><i class="fa-solid fa-circle-info me-1"></i> Contraceptive Sufficient Stock Criterion Rule</h6>
+                <p class="m-0 fs-7" style="opacity: 0.95;">
+                    <strong>Sufficient stock</strong> is defined as the stock required for consumption in the next <strong>30 days</strong> based on last month's consumption.
+                </p>
+            </div>
+        </div>
+
+        <!-- Category Overview Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="cat-card">
+                    <div class="cat-icon-wrapper">
+                        <i class="fa-solid fa-pills"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted fs-7 fw-bold uppercase">1. Contraceptive Stock</div>
+                        <small class="text-secondary">LARCs, Injectables, Pills, ECP, Condoms</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="cat-card">
+                    <div class="cat-icon-wrapper" style="background-color: #eff6ff; color: #2563eb;">
+                        <i class="fa-solid fa-hospital-user"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted fs-7 fw-bold uppercase">2. Infrastructure</div>
+                        <small class="text-secondary">Privacy Area, Sufficient Lighting</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="cat-card">
+                    <div class="cat-icon-wrapper" style="background-color: #fdf4ff; color: #c026d3;">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted fs-7 fw-bold uppercase">3. Trained Staff</div>
+                        <small class="text-secondary">Trained for IUCD, Sayana Press, Jadelle</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="cat-card">
+                    <div class="cat-icon-wrapper" style="background-color: #fff7ed; color: #ea580c;">
+                        <i class="fa-solid fa-toolbox"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted fs-7 fw-bold uppercase">4. Equipment & Supplies</div>
+                        <small class="text-secondary">Bed, Syringes, Speculums, Antiseptic</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- FAMILY PLANNING AUDIT LOG TABLE -->
+            <div class="col-xl-12">
+                <div class="log-card">
+                    <div class="log-card-header">
+                        <h5 class="m-0 fw-bold text-dark d-flex align-items-center">
+                            <i class="fa-solid fa-clipboard-check me-2 text-primary"></i> Family Planning Facility Inspection Log
+                        </h5>
+                        <button class="btn btn-excel" onclick="exportToExcel('fpTable', 'Family_Planning_Audit_Log')">
+                            <i class="fa-solid fa-file-excel me-1"></i> Export Excel
+                        </button>
+                    </div>
+
+                    <div class="table-responsive flex-grow-1">
+                        <table class="table custom-table align-middle" id="fpTable" data-page-size="5" data-current-page="1">
+                            <thead>
+                                <tr>
+                                    <th>HF Code</th>
+                                    <th>Region</th>
+                                    <th>Dist</th>
+                                    <th>HF Name</th>
+                                    <th>HF Type</th>
+                                    <th>Visit Time & Date</th>
+                                    <th>Audited Category</th>
+                                    <th>Status</th>
+                                    <th>Defective / Missing Parameter(s)</th>
+                                    <th>Action / Full Indicator Inspection</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <!-- Scenario 1: Multiple Stock Deficiencies (Contraceptive Stock) -->
+                                <tr>
+                                    <td class="fw-semibold text-secondary">HF-1002</td>
+                                    <td>Northern</td>
+                                    <td>Attock</td>
+                                    <td class="fw-bold">RHC Alpine</td>
+                                    <td><span class="badge bg-primary-subtle text-primary">RHC</span></td>
+                                    <td>08:15 AM, 04-Nov-2026</td>
+                                    <td class="fw-bold text-success">1. Contraceptives Stock</td>
+                                    <td><span class="badge-missing"><i class="fa-solid fa-triangle-exclamation me-1"></i>2 Stockouts</span></td>
+                                    <td class="text-danger fw-bold">IUCD / Jadelle, Inj. Depo / Inj. Sayana Press</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger btn-evidence" 
+                                                onclick='openFpModal("HF-1002 - RHC Alpine", "1. Contraceptives Stock", ["IUCD / Jadelle", "Inj. Depo / Inj. Sayana Press"], "LARC implants and injectable contraceptives out of stock for over 15 days.")'>
+                                            <i class="fa-solid fa-layer-group me-1"></i> View Breakdown
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Scenario 2: Multiple Equipment Deficiencies (Equipment & Supplies) -->
+                                <tr>
+                                    <td class="fw-semibold text-secondary">HF-2005</td>
+                                    <td>Central</td>
+                                    <td>Lahore</td>
+                                    <td class="fw-bold">GRD Model Town</td>
+                                    <td><span class="badge bg-info-subtle text-info-emphasis">GRD</span></td>
+                                    <td>09:45 AM, 04-Nov-2026</td>
+                                    <td class="fw-bold" style="color: #ea580c;">4. Equipment & Supplies availability</td>
+                                    <td><span class="badge-missing"><i class="fa-solid fa-triangle-exclamation me-1"></i>3 Deficiencies</span></td>
+                                    <td class="text-danger fw-bold">Uterine sound, Cusco's speculum, Injection Xyloclane</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger btn-evidence" 
+                                                onclick='openFpModal("HF-2005 - GRD Model Town", "4. Equipment & Supplies availability", ["Uterine sound", "Cusco&#39;s speculum", "Injection Xyloclane"], "Missing uterine sound instruments and Xyloclane vials for procedure.")'>
+                                            <i class="fa-solid fa-layer-group me-1"></i> View Breakdown
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Scenario 3: Trained Staff Absence -->
+                                <tr>
+                                    <td class="fw-semibold text-secondary">HF-2001</td>
+                                    <td>Southern</td>
+                                    <td>Rahim Yar Khan</td>
+                                    <td class="fw-bold">RHC East</td>
+                                    <td><span class="badge bg-primary-subtle text-primary">RHC</span></td>
+                                    <td>08:45 AM, 04-Nov-2026</td>
+                                    <td class="fw-bold" style="color: #c026d3;">3. Trained staff availability</td>
+                                    <td><span class="badge-missing"><i class="fa-solid fa-triangle-exclamation me-1"></i>1 Deficiency</span></td>
+                                    <td class="text-danger fw-bold">Trained staff to administer Jadelle</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger btn-evidence" 
+                                                onclick='openFpModal("HF-2001 - RHC East", "3. Trained staff availability", ["Trained staff to administer Jadelle"], "No trained healthcare provider present for Jadelle implant administration.")'>
+                                            <i class="fa-solid fa-layer-group me-1"></i> View Breakdown
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Scenario 4: Infrastructure Defect -->
+                                <tr>
+                                    <td class="fw-semibold text-secondary">HF-2003</td>
+                                    <td>Eastern</td>
+                                    <td>Kasur</td>
+                                    <td class="fw-bold">BHU Sunridge</td>
+                                    <td><span class="badge bg-secondary-subtle text-dark">BHU</span></td>
+                                    <td>09:10 AM, 04-Nov-2026</td>
+                                    <td class="fw-bold text-primary">2. Infrastructure</td>
+                                    <td><span class="badge-missing"><i class="fa-solid fa-triangle-exclamation me-1"></i>1 Deficiency</span></td>
+                                    <td class="text-danger fw-bold">Dedicated area providing privacy</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger btn-evidence" 
+                                                onclick='openFpModal("HF-2003 - BHU Sunridge", "2. Infrastructure", ["Dedicated area to administer injectables and implants"], "Dedicated FP counseling room lacks privacy curtain/screen.")'>
+                                            <i class="fa-solid fa-layer-group me-1"></i> View Breakdown
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Scenario 5: Fully Compliant Facility -->
+                                <tr>
+                                    <td class="fw-semibold text-secondary">HF-1001</td>
+                                    <td>Northern</td>
+                                    <td>Rawalpindi</td>
+                                    <td class="fw-bold">BHU Central</td>
+                                    <td><span class="badge bg-secondary-subtle text-dark">BHU</span></td>
+                                    <td>08:00 AM, 04-Nov-2026</td>
+                                    <td class="fw-bold text-success">1. Contraceptives Stock</td>
+                                    <td><span class="badge-avail"><i class="fa-solid fa-circle-check me-1"></i>100% Sufficient</span></td>
+                                    <td class="text-muted fw-semibold">None (All In Stock)</td>
+                                    <td>
+                                        <button class="btn btn-outline-success btn-evidence" 
+                                                onclick='openFpModal("HF-1001 - BHU Central", "1. Contraceptives Stock", [], "All required contraceptive methods verified above 30-day stock requirement.")'>
+                                            <i class="fa-solid fa-layer-group me-1"></i> View Breakdown
+                                        </button>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div class="table-pagination-footer d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted">Rows per page:</span>
+                            <select class="form-select form-select-sm" style="width: 70px;" onchange="changePageSize('fpTable', this.value)">
+                                <option value="3">3</option>
+                                <option value="5" selected>5</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                        <div id="fpTableInfo" class="text-muted">Showing 0 to 0 of 0 entries</div>
+                        <ul class="pagination pagination-sm m-0" id="fpTablePagination"></ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Dynamic Family Planning Indicator Breakdown Modal -->
+    <div class="modal fade" id="fpBreakdownModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <div>
+                        <h6 class="modal-title fw-bold" id="breakdownModalTitle">Family Planning Category Breakdown</h6>
+                        <small class="text-muted" id="breakdownModalSub">FP Readiness Audit Log</small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+
+                    <div class="alert alert-light border rounded-3 d-flex align-items-center justify-content-between mb-3 p-3">
+                        <div>
+                            <span class="text-muted fs-7">Inspected Category:</span>
+                            <div class="fw-bold text-dark" id="modalCategoryName">--</div>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted fs-7">Audit Result:</span>
+                            <div id="modalAuditStatus">--</div>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold fs-7 uppercase text-secondary mb-2">Checklist Status & Criteria:</h6>
+                    
+                    <!-- Dynamic Indicators Container -->
+                    <ul class="list-group indicator-list-group shadow-sm mb-3" id="indicatorListContainer" style="max-height: 380px; overflow-y: auto;">
+                        <!-- JS dynamically inserts category parameters and criteria -->
+                    </ul>
+
+                    <div id="remarksContainer" class="p-3 bg-light rounded border">
+                        <small class="fw-bold text-dark d-block mb-1"><i class="fa-solid fa-comment-dots me-1 text-primary"></i> Inspector Remarks:</small>
+                        <small class="text-muted" id="modalRemarksText">None</small>
+                    </div>
+
+                </div>
+                <div class="modal-footer bg-light">
+                    <button class="btn btn-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary btn-sm rounded-pill px-4" onclick="downloadAttachment()">
+                        <i class="fa-solid fa-download me-1"></i> Download Evidence Proof
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Exact Family Planning Category Database & Criteria (Derived from Reference Images 6a & 6b)
+        const fpIndicatorsDB = {
+            "1. Contraceptives Stock": [
+                { name: "IUCD / Jadelle", category: "LARCs", criteria: "Required for RHCs, BHUs, UHCs, MCH and MH (Not required for Dispensaries)" },
+                { name: "Inj. Depo / Inj. Sayana Press", category: "Injectables", criteria: "Required for RHCs, BHUs, UHCs, MCH and MH (Not required for Dispensaries)" },
+                { name: "COC / POP", category: "Pills", criteria: "Required for All Facilities including Dispensaries" },
+                { name: "ECP", category: "Emergency contraceptives", criteria: "Required for All Facilities including Dispensaries" },
+                { name: "Rubber condoms", category: "Condoms", criteria: "Required for All Facilities including Dispensaries" }
+            ],
+            "2. Infrastructure": [
+                { name: "Dedicated area to administer injectables and implants", criteria: "A dedicated area or room providing privacy to patients is available to administer injectables and implants at the health facility" },
+                { name: "Sufficient light availability", criteria: "Sufficient light is available at the dedicated area/room to administer injectables and implants" }
+            ],
+            "3. Trained staff availability": [
+                { name: "Trained staff to administer IUCD", criteria: "At least one staff trained to administer IUCD, Jadelle and Injection Sayana Press is present at the health facility" },
+                { name: "Trained staff to administer Injection Sayana Press", criteria: "At least one staff trained to administer IUCD, Jadelle and Injection Sayana Press is present at the health facility" },
+                { name: "Trained staff to administer Jadelle", criteria: "At least one staff trained to administer IUCD, Jadelle and Injection Sayana Press is present at the health facility" }
+            ],
+            "4. Equipment & Supplies availability": [
+                { name: "Patient bed", criteria: "At least one patient bed is present in the dedicated area/room to administer injectables and implants" },
+                { name: "5ml auto disposable syringes", criteria: "At least ten 5ml auto disposable syringes are available" },
+                { name: "Uterine sound", criteria: "At least one reusable or five disposable uterine sounds are available" },
+                { name: "Cusco's speculum", criteria: "At least one cusco's speculum is available" },
+                { name: "Sponge holding forcep", criteria: "At least one sponge holding forcep is available" },
+                { name: "Vulsellum/Tenaculum", criteria: "At least one vulsellum/tenaculum is available" },
+                { name: "Scissors", criteria: "At least one pair of scissors is available" },
+                { name: "Sims speculum", criteria: "At least one sims speculum is available" },
+                { name: "Injection Xyloclane", criteria: "At least five vials of injection xyloclane are available" },
+                { name: "Pyodine solution", criteria: "At least one bottle of pyodine solution is available" },
+                { name: "Bandage/Gauze", criteria: "At least one bandage roll/gauze is available" }
+            ]
+        };
+
+        // Modal Handler: Renders all indicators in the category, highlighting defective ones
+        function openFpModal(facilityTitle, categoryName, defectiveIndicators, remarks) {
+            document.getElementById('breakdownModalTitle').innerText = facilityTitle;
+            document.getElementById('breakdownModalSub').innerText = 'Family Planning Service Audit Breakdown';
+            document.getElementById('modalCategoryName').innerText = categoryName;
+            document.getElementById('modalRemarksText').innerText = remarks || "No additional remarks.";
+
+            // Standardize defective list to lower-cased array
+            let missingList = [];
+            if (Array.isArray(defectiveIndicators)) {
+                missingList = defectiveIndicators.map(item => item.toLowerCase().trim());
+            } else if (typeof defectiveIndicators === 'string' && defectiveIndicators.trim() !== '') {
+                missingList = [defectiveIndicators.toLowerCase().trim()];
+            }
+
+            const statusBadgeElem = document.getElementById('modalAuditStatus');
+            if (missingList.length > 0) {
+                statusBadgeElem.innerHTML = `<span class="badge-missing"><i class="fa-solid fa-triangle-exclamation me-1"></i> ${missingList.length} Deficient Parameter(s)</span>`;
+            } else {
+                statusBadgeElem.innerHTML = '<span class="badge-avail"><i class="fa-solid fa-circle-check me-1"></i> 100% Compliant</span>';
+            }
+
+            const container = document.getElementById('indicatorListContainer');
+            container.innerHTML = '';
+
+            const list = fpIndicatorsDB[categoryName] || [];
+
+            list.forEach(item => {
+                const li = document.createElement('li');
+                const isDefective = missingList.some(missingItem => item.name.toLowerCase().includes(missingItem));
+
+                if (isDefective) {
+                    li.className = 'list-group-item list-group-item-defective d-flex justify-content-between align-items-center mb-1 rounded';
+                    li.innerHTML = `
+                        <div>
+                            <i class="fa-solid fa-circle-xmark me-2 text-danger"></i>
+                            <span>${item.name}</span>
+                            ${item.category ? `<span class="badge bg-secondary-subtle text-dark ms-2">${item.category}</span>` : ''}
+                            <br><small class="text-danger-emphasis">Criteria: ${item.criteria}</small>
+                        </div>
+                        <span class="badge bg-danger text-white px-2 py-1">DEFICIENT / OUT OF STOCK</span>
+                    `;
+                } else {
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center text-secondary mb-1 rounded';
+                    li.innerHTML = `
+                        <div>
+                            <i class="fa-solid fa-circle-check me-2 text-success"></i>
+                            <span>${item.name}</span>
+                            ${item.category ? `<span class="badge bg-secondary-subtle text-dark ms-2">${item.category}</span>` : ''}
+                            <br><small class="text-muted">Criteria: ${item.criteria}</small>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle">Compliant / Sufficient</span>
+                    `;
+                }
+
+                container.appendChild(li);
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('fpBreakdownModal'));
+            modal.show();
+        }
+
+        // Pagination Engine
+        function renderPagination(tableId) {
+            const table = document.getElementById(tableId);
+            const pageSize = parseInt(table.getAttribute('data-page-size')) || 5;
+            let currentPage = parseInt(table.getAttribute('data-current-page')) || 1;
+
+            const tbody = table.querySelector('tbody');
+            const allRows = Array.from(tbody.querySelectorAll('tr'));
+            
+            const totalEntries = allRows.length;
+            const totalPages = Math.ceil(totalEntries / pageSize) || 1;
+
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIdx = (currentPage - 1) * pageSize;
+            const endIdx = startIdx + pageSize;
+
+            allRows.forEach(row => row.style.display = 'none');
+            allRows.slice(startIdx, endIdx).forEach(row => row.style.display = '');
+
+            const infoElem = document.getElementById(tableId + 'Info');
+            if (infoElem) {
+                const showingStart = totalEntries === 0 ? 0 : startIdx + 1;
+                const showingEnd = Math.min(endIdx, totalEntries);
+                infoElem.textContent = `Showing ${showingStart} to ${showingEnd} of ${totalEntries} entries`;
+            }
+
+            const pagContainer = document.getElementById(tableId + 'Pagination');
+            if (!pagContainer) return;
+            pagContainer.innerHTML = '';
+
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage('${tableId}', ${currentPage - 1}); return false;">Previous</a>`;
+            pagContainer.appendChild(prevLi);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="changePage('${tableId}', ${i}); return false;">${i}</a>`;
+                pagContainer.appendChild(li);
+            }
+
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage('${tableId}', ${currentPage + 1}); return false;">Next</a>`;
+            pagContainer.appendChild(nextLi);
+        }
+
+        function changePage(tableId, pageNum) {
+            const table = document.getElementById(tableId);
+            table.setAttribute('data-current-page', pageNum);
+            renderPagination(tableId);
+        }
+
+        function changePageSize(tableId, newSize) {
+            const table = document.getElementById(tableId);
+            table.setAttribute('data-page-size', newSize);
+            table.setAttribute('data-current-page', 1);
+            renderPagination(tableId);
+        }
+
+        // CSV Export Functionality
+        function exportToExcel(tableId, filename) {
+            const table = document.getElementById(tableId);
+            let csv = [];
+            
+            let headers = [];
+            const ths = table.querySelectorAll('thead th');
+            ths.forEach(th => {
+                headers.push('"' + th.innerText.trim().replace(/"/g, '""') + '"');
+            });
+            csv.push(headers.join(','));
+
+            const trs = table.querySelectorAll('tbody tr');
+            trs.forEach(tr => {
+                let row = [];
+                const tds = tr.querySelectorAll('td');
+                tds.forEach(td => {
+                    let data = td.innerText.replace(/(\r\n|\n|\r)/gm, " ").replace(/\s+/g, " ").trim();
+                    data = data.replace(/"/g, '""');
+                    row.push('"' + data + '"');
+                });
+                csv.push(row.join(","));
+            });
+
+            const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            const downloadLink = document.createElement("a");
+            downloadLink.download = filename + ".csv";
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        function downloadAttachment() {
+            const msgBox = document.createElement('div');
+            msgBox.className = 'alert alert-info position-fixed bottom-0 end-0 m-3 shadow-sm';
+            msgBox.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Evidence attachment download initiated.';
+            document.body.appendChild(msgBox);
+            setTimeout(() => msgBox.remove(), 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPagination('fpTable');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMU - Indicator Contestation & Compliance Portal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- TOP BRAND NAVIGATION HEADER -->
+    <nav class="bg-gradient-to-r from-slate-900 to-slate-800 px-7 py-3.5 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-scale-balanced text-2xl text-sky-400"></i>
+                <div>
+                    <div class="text-white font-extrabold text-lg tracking-tight">MMU Portal</div>
+                    <div class="text-slate-400 text-xs font-semibold">Ministers Monitoring Unit</div>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="px-4 py-1.5 border border-slate-600 hover:border-slate-400 text-white text-xs font-semibold rounded-full transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left text-[11px]"></i> Back to Dashboard
+                </a>
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> Compliance System Active
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PAGE HEADER -->
+    <div class="bg-white border-b border-slate-200/80 px-8 py-5">
+        <div class="container mx-auto">
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Field Audit Indicator Contestation & Review</h1>
+            <p class="text-xs text-slate-500 mt-1">File disputes, submit compliance evidence, and appeal non-functional indicator flags from field audit logs</p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow max-w-4xl">
+        
+        <!-- CONTESTATION / COMPLIANCE FORM -->
+        <div id="view-contestation" class="page-view space-y-6">
+            
+            <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-5">
+                <h2 class="text-xl font-bold text-slate-800 tracking-tight mb-2">Location & Indicator Contestation Details</h2>
+
+                <!-- 1. Cascading Region & District -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Region*</label>
+                        <select id="regionSelect" onchange="onRegionChange()" class="w-full bg-slate-100 border-none rounded-xl px-3 py-2.5 text-xs text-slate-700 font-medium focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Select Region</option>
+                            <option value="Sukkur">Sukkur</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Larkana">Larkana</option>
+                            <option value="Mirpurkhas">Mirpurkhas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">District*</label>
+                        <select id="districtSelect" onchange="onDistrictChange()" disabled class="w-full bg-slate-100 border-none rounded-xl px-3 py-2.5 text-xs text-slate-700 font-medium focus:ring-2 focus:ring-emerald-500 disabled:opacity-50">
+                            <option value="">Select Region First</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 2. Cascading Health Facility -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Health Facility*</label>
+                    <select id="facilitySelect" disabled class="w-full bg-slate-100 border-none rounded-xl px-3 py-2.5 text-xs text-slate-700 font-medium focus:ring-2 focus:ring-emerald-500 disabled:opacity-50">
+                        <option value="">Select District First</option>
+                    </select>
+                </div>
+
+                <!-- 3. Designation & Visit Type -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Designation</label>
+                        <select class="w-full bg-slate-100 border-none rounded-xl px-3 py-2.5 text-xs text-slate-700 font-medium focus:ring-2 focus:ring-emerald-500">
+                            <option>Medical Officer (MO)</option>
+                            <option>Woman Medical Officer (WMO)</option>
+                            <option>Staff Nurse</option>
+                            <option>Dispenser</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Visit Type</label>
+                        <select class="w-full bg-slate-100 border-none rounded-xl px-3 py-2.5 text-xs text-slate-700 font-medium focus:ring-2 focus:ring-emerald-500">
+                            <option>Routine Monitoring</option>
+                            <option>Surprise Visit</option>
+                            <option>Special Audit</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 4. Single Date & Time Field -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Visit Date & Time*</label>
+                    <input type="datetime-local" id="visitDateTime" class="w-full bg-slate-100 border-none rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-emerald-500">
+                </div>
+
+                <!-- 5. Priority Areas Dropdown -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Priority Area*</label>
+                    <select id="priorityAreaSelect" onchange="onPriorityAreaChange()" class="w-full bg-slate-100 border-none rounded-xl px-3 py-2.5 text-xs text-slate-700 font-bold focus:ring-2 focus:ring-emerald-500">
+                        <option value="">Select Priority Area</option>
+                        <option value="infrastructure">Facility Infrastructure</option>
+                        <option value="staffing">Staff Availability MO-WMO</option>
+                        <option value="labor_room">Labor Room Services</option>
+                        <option value="anc_pnc">ANC & PNC Services</option>
+                        <option value="medicines">Essential Tracer Medicines</option>
+                        <option value="epi">EPI Immunisation Services</option>
+                        <option value="family_planning">Family Planning Services</option>
+                    </select>
+                </div>
+
+                <!-- 6. Cascading Indicator Dropdown -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Indicator*</label>
+                    <select id="indicatorSelect" onchange="onIndicatorChange()" disabled class="w-full bg-slate-100 border-none rounded-xl px-3 py-2.5 text-xs text-slate-600 font-semibold focus:ring-2 focus:ring-emerald-500 disabled:opacity-50">
+                        <option value="">Select Priority Area First</option>
+                    </select>
+                </div>
+
+                <!-- 7. Staff Sub-Status (Visible only for Staff Availability) -->
+                <div id="staffStatusContainer" class="hidden">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Staff Absence Reason / Status</label>
+                    <select id="staffStatusSelect" class="w-full bg-slate-100 border-none rounded-xl px-3 py-2.5 text-xs text-slate-700 font-semibold focus:ring-2 focus:ring-emerald-500">
+                        <option value="not_posted">1- Not Posted</option>
+                        <option value="not_present">2- Not Present (Absent on Shift)</option>
+                    </select>
+                </div>
+
+                <!-- Upload Additional File Field -->
+                <div class="space-y-1">
+                    <div onclick="document.getElementById('file-input-main').click()" class="border-2 border-dashed border-slate-300 rounded-2xl p-4 text-center hover:border-emerald-500 hover:bg-emerald-50/30 transition cursor-pointer flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-upload text-slate-500 text-sm"></i>
+                        <span class="text-xs font-semibold text-slate-600">Upload Additional File</span>
+                        <input type="file" id="file-input-main" class="hidden" onchange="handleFileSelect(this, 'main-file-status')">
+                    </div>
+                    <p id="main-file-status" class="text-[11px] text-slate-400">Attach proof file. File size should not exceed 10MB</p>
+                </div>
+
+                <!-- Rich Text Comment Editor Block -->
+                <div class="border border-slate-300 rounded-2xl overflow-hidden bg-white shadow-sm">
+                    <div class="bg-slate-50 border-b border-slate-200 px-3 py-2 flex items-center space-x-4 text-slate-600 text-sm">
+                        <button type="button" onclick="formatText('bold')" class="hover:text-slate-900 font-bold px-1">B</button>
+                        <button type="button" onclick="formatText('italic')" class="hover:text-slate-900 italic px-1">I</button>
+                        <button type="button" onclick="formatText('underline')" class="hover:text-slate-900 underline px-1">U</button>
+                        <span class="text-slate-300">|</span>
+                        <button type="button" onclick="formatText('code')" class="hover:text-slate-900 font-mono text-xs"><i class="fa-solid fa-code"></i></button>
+                        <button type="button" onclick="formatText('list-ul')" class="hover:text-slate-900"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" onclick="formatText('list-ol')" class="hover:text-slate-900"><i class="fa-solid fa-list-ol"></i></button>
+                    </div>
+                    <textarea id="commentText" rows="4" class="w-full p-3 text-xs text-slate-700 focus:outline-none placeholder-slate-400 resize-none" placeholder="Comments / Detailed Reason for Contestation..."></textarea>
+                </div>
+
+
+                <!-- Submit CTA Button -->
+                <button onclick="submitContestation()" class="w-full py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-extrabold rounded-2xl shadow-md transition text-xs tracking-wider uppercase">
+                    SUBMIT CONTESTATION
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-4 px-8 text-center text-xs text-slate-500">
+        MMU Ministers Monitoring Unit &copy; 2026. All rights reserved.
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script>
+        // 1. Location Data Mapping (Region -> Districts -> Health Facilities)
+        const locationData = {
+            "Sukkur": {
+                "Ghotki": ["23L24 BHU Nabad Jatoi", "23L04 BHU Dehar", "23L09 RHC Ahmedpur"],
+                "Khairpur": ["23K01 RHC Setharja", "23K12 BHU Gambat", "23K05 BHU Kot Diji"]
+            },
+            "Hyderabad": {
+                "Matiari": ["12M01 BHU Khyber", "12M04 RHC Bhit Shah"],
+                "Tando Allahyar": ["12T02 RHC Chamber", "12T08 BHU Pyaro Khan"]
+            },
+            "Larkana": {
+                "Kambar Shahdadkot": ["34K01 RHC Kambar", "34K09 BHU Miro Khan"],
+                "Shikarpur": ["34S02 RHC Garhi Yasin", "34S05 BHU Madeji"]
+            },
+            "Mirpurkhas": {
+                "Umerkot": ["45U01 RHC Pithoro", "45U08 BHU Dhoronaro"],
+                "Tharparkar": ["45T03 RHC Mithi", "45T11 BHU Islamkot"]
+            }
+        };
+
+        // 2. Priority Area Indicators Mapping
+        const priorityIndicators = {
+            "infrastructure": [
+                "a) Open facilities",
+                "b) Road sign",
+                "c) Boundary wall",
+                "d) Sign boards",
+                "e) Waiting area",
+                "f) Bench/chairs",
+                "g) Fans",
+                "h) Water cooler",
+                "i) Electricity presence",
+                "j) Adequate lighting inside the building",
+                "k) Patient toilet",
+                "l) Female patient toilet",
+                "m) Continuous water supply",
+                "n) Biometric machine",
+                "o) Water filtration/RO plant"
+            ],
+            "staffing": [
+                "a) Present",
+                "b) Not Present"
+            ],
+            "labor_room": [
+                "Continuous water supply",
+                "Patient toilet",
+                "Back up electric supply",
+                "Autoclave",
+                "Delivery table",
+                "Emergency drugs tray"
+            ],
+            "anc_pnc": [
+                "Female healthcare provider availability",
+                "BP apparatus",
+                "HB meter",
+                "Urine albumin strip",
+                "Pregnancy strip",
+                "Fetoscope",
+                "Baby & Adult weight machines",
+                "Glucometer & Lancets"
+            ],
+            "medicines": [
+                "15-Day Stock: Antibiotics & Syrups",
+                "15-Day Stock: IV Infusions & ORS",
+                "15-Day Stock: Anti-snake Venom (ASV)",
+                "15-Day Stock: Anti-rabies vaccine (ARV)"
+            ],
+            "epi": [
+                "EPI room open during working hours (8am-2pm)",
+                "Vaccinator / Trained staff present",
+                "Functional Ice-Lined Refrigerator (ILR)",
+                "Optimal ILR temperature (2°C - 8°C)",
+                "Standard Vaccine Carrier (SVC) with cool packs"
+            ],
+            "family_planning": [
+                "30-Day Contraceptive Stock (LARCs, Injectables, Pills)",
+                "Dedicated FP area with privacy screen",
+                "Trained staff to administer IUCD / Sayana Press / Jadelle",
+                "Surgical equipment & consumable supplies availability"
+            ]
+        };
+
+        // Handle Region Change
+        function onRegionChange() {
+            const region = document.getElementById('regionSelect').value;
+            const distSelect = document.getElementById('districtSelect');
+            const facSelect = document.getElementById('facilitySelect');
+
+            distSelect.innerHTML = '<option value="">Select District</option>';
+            facSelect.innerHTML = '<option value="">Select District First</option>';
+            facSelect.disabled = true;
+
+            if (region && locationData[region]) {
+                distSelect.disabled = false;
+                Object.keys(locationData[region]).forEach(dist => {
+                    const opt = document.createElement('option');
+                    opt.value = dist;
+                    opt.textContent = dist;
+                    distSelect.appendChild(opt);
+                });
+            } else {
+                distSelect.disabled = true;
+                distSelect.innerHTML = '<option value="">Select Region First</option>';
+            }
+        }
+
+        // Handle District Change
+        function onDistrictChange() {
+            const region = document.getElementById('regionSelect').value;
+            const dist = document.getElementById('districtSelect').value;
+            const facSelect = document.getElementById('facilitySelect');
+
+            facSelect.innerHTML = '<option value="">Select Health Facility</option>';
+
+            if (region && dist && locationData[region][dist]) {
+                facSelect.disabled = false;
+                locationData[region][dist].forEach(fac => {
+                    const opt = document.createElement('option');
+                    opt.value = fac;
+                    opt.textContent = fac;
+                    facSelect.appendChild(opt);
+                });
+            } else {
+                facSelect.disabled = true;
+                facSelect.innerHTML = '<option value="">Select District First</option>';
+            }
+        }
+
+        // Handle Priority Area Change
+        function onPriorityAreaChange() {
+            const area = document.getElementById('priorityAreaSelect').value;
+            const indSelect = document.getElementById('indicatorSelect');
+            const staffContainer = document.getElementById('staffStatusContainer');
+
+            indSelect.innerHTML = '<option value="">Select Indicator</option>';
+            staffContainer.classList.add('hidden');
+
+            if (area && priorityIndicators[area]) {
+                indSelect.disabled = false;
+                priorityIndicators[area].forEach(ind => {
+                    const opt = document.createElement('option');
+                    opt.value = ind;
+                    opt.textContent = ind;
+                    indSelect.appendChild(opt);
+                });
+            } else {
+                indSelect.disabled = true;
+                indSelect.innerHTML = '<option value="">Select Priority Area First</option>';
+            }
+        }
+
+        // Handle Indicator Selection (Toggle Sub-status for Staff)
+        function onIndicatorChange() {
+            const indValue = document.getElementById('indicatorSelect').value;
+            const staffContainer = document.getElementById('staffStatusContainer');
+
+            if (indValue === "b) Not Present") {
+                staffContainer.classList.remove('hidden');
+            } else {
+                staffContainer.classList.add('hidden');
+            }
+        }
+
+        function handleFileSelect(inputElem, statusElemId) {
+            const statusElem = document.getElementById(statusElemId);
+            if (inputElem.files && inputElem.files[0]) {
+                const file = inputElem.files[0];
+                const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    statusElem.innerHTML = `<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark me-1"></i> File size exceeds 10MB limit (${fileSizeMB} MB).</span>`;
+                    inputElem.value = "";
+                    return;
+                }
+                statusElem.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check me-1"></i> Selected: ${file.name} (${fileSizeMB} MB)</span>`;
+            }
+        }
+
+        function formatText(style) {
+            const textarea = document.getElementById('commentText');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            let formattedText = '';
+
+            if (!selectedText) return;
+
+            switch(style) {
+                case 'bold': formattedText = `**${selectedText}**`; break;
+                case 'italic': formattedText = `_${selectedText}_`; break;
+                case 'underline': formattedText = `<u>${selectedText}</u>`; break;
+                case 'code': formattedText = `\`${selectedText}\``; break;
+                case 'list-ul': formattedText = `\n- ${selectedText}`; break;
+                case 'list-ol': formattedText = `\n1. ${selectedText}`; break;
+                default: formattedText = selectedText;
+            }
+
+            textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
+        }
+
+        function submitContestation() {
+            const fac = document.getElementById('facilitySelect').value;
+            const ind = document.getElementById('indicatorSelect').value;
+
+            if (!fac || !ind) {
+                alert("Please select Region, District, Health Facility, and Indicator before submitting.");
+                return;
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center space-x-3 text-xs z-50 border border-slate-700 animate-bounce';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-base"></i><span>Contestation successfully submitted for review!</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Set default datetime to current time on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('visitDateTime').value = now.toISOString().slice(0, 16);
+        });
+    </script>
+</body>
+</html>
